@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+  install-deps:
+    docker:
+      - image: node:16-alpine
+
+    working_directory: ~/project
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-packages-{{ checksum "package.json" }}
+            - v1-packages-
+      - run:
+          name: Install packages
+          command: |
+            make install
+      - save_cache:
+          paths:
+            - "./package-lock.json"
+            - "./node_modules"
+          key: v1-packages-{{ checksum "package.json" }}
+
+  build:
+    docker:
+      - image: node:16-alpine
+
+    working_directory: ~/project
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-packages-{{ checksum "package.json" }}
+            - v1-packages-
+      - run:
+          name: Build
+          command: |
+            make build
+
+workflows:
+  default:
+    jobs:
+      - install-deps
+      - build:
+          requires:
+            - install-deps
