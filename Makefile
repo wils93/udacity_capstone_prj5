@@ -16,3 +16,6 @@ build:
 lint:
 	npm run svelte-check
 	hadolint Dockerfile
+
+list:
+	@grep '^[^#[:space:]].*:' Makefile
