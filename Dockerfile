@@ -2,8 +2,8 @@ FROM node:16 as build
 
 WORKDIR /app
 COPY . .
-RUN npm install \
-    && npm run build
+RUN make install-local \
+    && make build-local
 
 FROM nginx:1.21.3
 
