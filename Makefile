@@ -38,5 +38,11 @@ build-image:
 run-server: build-image
 	docker run --rm -it -p 80:80 dgbwm
 
+run-cluster:
+	minikube start --ports=80:80
+	minikube addons enable ingress
+	kubectl apply -f k8s/deploy-cluster.yaml
+	kubectl apply -f k8s/ingress.yml
+
 list:
 	@grep '^[^#[:space:]].*:' Makefile
