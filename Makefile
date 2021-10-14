@@ -13,11 +13,12 @@ install-k8s:
 	cd /tmp && chmod +x kubectl
 	mkdir -p ~/.local/bin/kubectl
 	cd /tmp && mv ./kubectl ~/.local/bin/kubectl
+	which kubectl
 
 install-minikube:
 	cd /tmp && curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 	sudo install /tmp/minikube-linux-amd64 /usr/local/bin/minikube
-	which minikube	
+	which minikube
 
 install-local:
 	npm install
