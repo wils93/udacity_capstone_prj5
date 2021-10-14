@@ -1,0 +1,156 @@
+# Servers Infrastrcuture
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation configuration for creating servers for capstone project
+
+#########################
+### Parameter Section ###
+#########################
+Parameters:
+  # MyIp:
+  #   Description: My IP to enable SSH only through this IP
+  #   Type: String
+  EnvironmentName:
+    Description: Environment Name for the infrastructure
+    Type: String
+  InstanceAMI:
+    Description: Instance AMI
+    Type: AWS::EC2::Image::Id
+  InstanceType:
+    Description: Instance Type
+    Type: String
+  LaunchTemplateVersion:
+    Description: Launch Template Version
+    Type: String
+
+#########################
+### Resources Section ###
+#########################
+Resources:
+  ## Security Groups ##
+  # Load Balancer Security Group #
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP to/from load balancer
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-LBSecGroup
+      VpcId: !ImportValue
+        'Fn::Sub': "${EnvironmentName}-VpcId"
+
+  # Launch Template #
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: CapstoneLaunchTemplate
+      LaunchTemplateData:
+        KeyName: !Sub "${EnvironmentName}"
+        ImageId: !Ref InstanceAMI
+        InstanceType: !Ref InstanceType
+        SecurityGroupIds:
+          - !GetAtt LoadBalancerSecurityGroup.GroupId
+        BlockDeviceMappings:
+          - DeviceName: /dev/sdk
+            Ebs:
+              VolumeSize: 10
+
+  ## Autoscaling ##
+  # Target Group #
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: "/"
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 2
+      Port: 80
+      Protocol: HTTP
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-TargetGroup"
+      UnhealthyThresholdCount: 5
+      VpcId: !ImportValue
+        'Fn::Sub': "${EnvironmentName}-VpcId"
+  # Autoscaling Group #
+  AutoscalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !Ref LaunchTemplateVersion
+      MaxSize: "2"
+      MinSize: "1"
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-AutoscalingGroup"
+          PropagateAtLaunch: true
+      TargetGroupARNs:
+        - !Ref TargetGroup
+      VPCZoneIdentifier:
+        - !ImportValue
+          'Fn::Sub': "${EnvironmentName}-PublicSubnets"
+
+  ## Load Balancer ##
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${EnvironmentName}-LoadBalancer"
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets: 
+        - !ImportValue
+          'Fn::Sub': "${EnvironmentName}-PublicSubnetAZ1"
+        - !ImportValue
+          'Fn::Sub': "${EnvironmentName}-PublicSubnetAZ2"
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvironmentName}-LoadBalancer"
+  # Listener #
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+  # Listener Rule #
+  LoadBalancerListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions: 
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - "/"
+      ListenerArn: !Ref Listener
+      Priority: 1
+
+#######################
+### Outputs Section ###
+#######################
+Outputs:
+  LoadBalancerDNS:
+    Description: DNS/Public URL of load balancer
+    Value:  !Join [ "", [ "http://", !GetAtt LoadBalancer.DNSName ] ]
+    Export: 
+      Name: !Sub ${EnvironmentName}-DNS    
