@@ -59,6 +59,18 @@ build-image:
 run-server: build-image
 	docker run --rm -it -p 80:80 dgbwm
 
+create-network:
+	./run.sh network create
+
+delete-network:
+	./run.sh network delete
+
+create-servers:
+	./run.sh servers create
+
+delete-servers:
+	./run.sh servers delete
+
 run-cluster:
 	minikube start --ports=80:80
 	minikube addons enable ingress
