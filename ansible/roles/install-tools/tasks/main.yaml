@@ -1,0 +1,61 @@
+---
+- name: Create directory for captone
+  file:
+    path: /home/ubuntu/captone/
+    state: directory
+    
+- name: Copy makefile
+  become: yes
+  synchronize:
+    src: ../../Makefile
+    dest: /home/ubuntu/captone/
+
+- name: "Update apt packages"
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: "Upgrade apt packages"
+  become: yes
+  apt:
+    upgrade: yes
+
+- name: "Auto remove unused packages"
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "Install make"
+  become: yes
+  apt:
+    name: ["make"]
+    state: latest
+    update_cache: yes
+    
+- name: Install minikube
+  community.general.make:
+    chdir: /home/ubuntu/captone/
+    target: install-minikube
+  become: yes
+  
+- name: Install k8s
+  community.general.make:
+    chdir: /home/ubuntu/captone/
+    target: install-k8s
+  become: yes
+  
+- name: Install docker
+  community.general.make:
+    chdir: /home/ubuntu/captone/
+    target: install-docker
+  become: yes
+  
+- name: Add ubuntu to docker group
+  user:
+    name: 'ubuntu'
+    groups: docker
+    append: yes
+
+- name: Reset ssh connection to allow user changes to affect ubuntu user
+  ansible.builtin.meta:
+    reset_connection

@@ -1,0 +1,14 @@
+---
+- name: Copy k8s scripts
+  become: yes
+  synchronize:
+    src: ../../k8s
+    dest: /home/ubuntu/captone/
+    recursive: true
+
+- name: Run k8s cluster
+  community.general.make:
+    chdir: /home/ubuntu/captone/
+    target: run-cluster
+  become: yes
+  become_user: ubuntu
