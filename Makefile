@@ -75,7 +75,11 @@ run-cluster:
 	minikube start --ports=80:80
 	minikube addons enable ingress
 	kubectl apply -f k8s/deploy-cluster.yaml
-	kubectl apply -f k8s/ingress.yml
+	kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller 
+	kubectl apply -f k8s/ingress.yaml
+
+delete-cluster:
+	minikube delete
 
 list:
 	@grep '^[^#[:space:]].*:' Makefile
