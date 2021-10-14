@@ -29,6 +29,12 @@ install-docker:
 	sudo apt install docker-ce -y
 	sudo usermod -aG docker ubuntu
 
+install-ansible:
+	sudo apt update
+	sudo apt install ansible -y
+	ansible-galaxy collection install community.general
+	which ansible
+
 install-local:
 	npm install
 
