@@ -71,6 +71,8 @@ create-servers:
 delete-servers:
 	./run.sh servers delete
 
+delete-stacks: delete-servers delete-network
+
 run-cluster:
 	minikube start --ports=80:80
 	minikube addons enable ingress
