@@ -5,7 +5,7 @@ create ()
     aws cloudformation create-stack \
         --stack-name ${stack_name} \
         --template-body file://${scripts_path}${template_body} \
-        --parameters file://${scripts_path}${parameters} \
+        ${parameters_opt} \
         --tags Key=Name,Value=${environment_name} \
         --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
         --region=us-east-2
@@ -19,9 +19,9 @@ update ()
 {
     echo Updating ${stack_name} stack
     aws cloudformation update-stack \
-        stack-name ${stack_name} \
-        template-body file://${scripts_path}${template_body} \
-        --parameters file://${scripts_path}${parameters} \
+        --stack-name ${stack_name} \
+        --template-body file://${scripts_path}${template_body} \
+        ${parameters_opt} \
         --tags Key=Name,Value=${environment_name} \
         --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
         --region=us-east-2
@@ -39,7 +39,7 @@ delete ()
         
     aws cloudformation wait \
         stack-delete-complete \
-        --stack-name $stack_name        
+        --stack-name $stack_name
 }
 
 main()
@@ -72,5 +72,11 @@ stack_name=$environment_name-$stack
 template_body=$stack.yaml
 parameters=$stack-params.json
 function=$2
+
+if [ -e "$scripts_path$parameters" ]; then
+    parameters_opt="--parameters file://${scripts_path}${parameters}"
+else
+    parameters_opt=
+fi
 
 main
