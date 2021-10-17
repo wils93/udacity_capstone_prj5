@@ -32,9 +32,9 @@ pushd ansible \
 
 sed -i '2d' ansible/inventory.txt
 
-yq e -i '(.Resources.cloudfrontdistribution.Properties.DistributionConfig.Origins[0].Id,
-    .Resources.cloudfrontdistribution.Properties.DistributionConfig.Origins[0].DomainName,
-    .Resources.cloudfrontdistribution.Properties.DistributionConfig.DefaultCacheBehavior.TargetOriginId)
+yq e -i '(.Resources.capstonecloudfrontdistribution.Properties.DistributionConfig.Origins[0].Id,
+    .Resources.capstonecloudfrontdistribution.Properties.DistributionConfig.Origins[0].DomainName,
+    .Resources.capstonecloudfrontdistribution.Properties.DistributionConfig.DefaultCacheBehavior.TargetOriginId)
     = env(load_balancer_link)' \
     cloudformation/cloudfront.yaml
 
