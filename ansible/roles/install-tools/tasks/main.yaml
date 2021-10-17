@@ -1,14 +1,14 @@
 ---
-- name: Create directory for captone
+- name: Create directory for capstone
   file:
-    path: /home/ubuntu/captone/
+    path: /home/ubuntu/capstone/
     state: directory
     
 - name: Copy makefile
   become: yes
   synchronize:
     src: ../../Makefile
-    dest: /home/ubuntu/captone/
+    dest: /home/ubuntu/capstone/
 
 - name: "Update apt packages"
   become: yes
@@ -34,19 +34,19 @@
     
 - name: Install minikube
   community.general.make:
-    chdir: /home/ubuntu/captone/
+    chdir: /home/ubuntu/capstone/
     target: install-minikube
   become: yes
   
 - name: Install k8s
   community.general.make:
-    chdir: /home/ubuntu/captone/
+    chdir: /home/ubuntu/capstone/
     target: install-k8s
   become: yes
   
 - name: Install docker
   community.general.make:
-    chdir: /home/ubuntu/captone/
+    chdir: /home/ubuntu/capstone/
     target: install-docker
   become: yes
   
