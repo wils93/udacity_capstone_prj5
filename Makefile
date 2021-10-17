@@ -56,6 +56,10 @@ lint:
 build-image:
 	docker build -t dgbwm .
 
+push-image: lint build-image
+	docker tag dgbwm wils93/udacity_capstone_prj5:latest
+	docker push wils93/udacity_capstone_prj5:latest
+
 run-server: build-image
 	docker run --rm -it -p 80:80 dgbwm
 
