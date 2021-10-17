@@ -42,6 +42,6 @@ yq e -i '(.Resources.cloudfrontdistribution.Properties.DistributionConfig.Origin
 
 cloudfront_link=`aws cloudfront list-distributions --query \
     "DistributionList.Items[].{DomainName: DomainName, OriginDomainName: Origins.Items[0].DomainName}
-    [?contains(OriginDomainName, 'capstone-loadbalancer-432366368.us-east-2.elb.amazonaws.com')] | [0] | DomainName"`
+    [?contains(OriginDomainName, '${load_balancer_link}')] | [0] | DomainName"`
 
 echo You can now visit: $cloudfront_link
