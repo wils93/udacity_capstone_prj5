@@ -51,8 +51,8 @@
 </main>
 
 <style>
-    @import url("http://fonts.cdnfonts.com/css/bebas-neue");
-    @import url("http://fonts.cdnfonts.com/css/old-standard-tt-3");
+    @import url("https://fonts.cdnfonts.com/css/bebas-neue");
+    @import url("https://fonts.cdnfonts.com/css/old-standard-tt-3");
 
     main {
         display: grid;
