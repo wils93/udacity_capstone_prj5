@@ -77,25 +77,19 @@ jobs:
             
   deploy:
     docker:
-      - image: amazon/aws-cli
+      - image: contentwisetv/ansible-aws
       
     working_directory: ~/project
     
     steps:
-      - run:
-          name: Install tar
-          command: |
-            yum install -y tar gzip
-      - run:
-          name: Install git
-          command: |
-            yum install -y git
-      - run:
-          name: Install ansible
-          command: |
-            yum install epel-release
-            yum install ansible
-            ansible --version
+      # - run:
+      #     name: Install tar
+      #     command: |
+      #       yum install -y tar gzip
+      # - run:
+      #     name: Install git
+      #     command: |
+      #       yum install -y git
       - checkout
       - add_ssh_keys:
           fingerprints: ["d7:cd:01:bb:70:02:fd:e3:f6:ef:e7:de:8e:f3:d1:b0"]
