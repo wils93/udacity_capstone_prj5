@@ -4,12 +4,12 @@
   user: ubuntu
   gather_facts: false
   
-  # pre_tasks:
-  #   - name: "Wait until backend is up and responding"
-  #     wait_for:
-  #       host: "{{ backend_ip }}"
-  #       port: 22
-  #       delay: 10
+  pre_tasks:
+    - name: "Wait until backend is up and responding"
+      wait_for:
+        host: "{{ backend_ip }}"
+        port: 22
+        delay: 10
         
   roles:
     - install-tools

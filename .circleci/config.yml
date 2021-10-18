@@ -77,24 +77,38 @@ jobs:
             
   deploy:
     docker:
-      - image: contentwisetv/ansible-aws
+      - image: amazon/aws-cli
       
     working_directory: ~/project
     
     steps:
-      # - run:
-      #     name: Install tar
-      #     command: |
-      #       yum install -y tar gzip
-      # - run:
-      #     name: Install git
-      #     command: |
-      #       yum install -y git
+      - run:
+          name: Install tar
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: Install git
+          command: |
+            yum install -y git
+      - run:
+          name: Install make, wget
+          command: |
+            yum install -y make wget
       - checkout
       - add_ssh_keys:
           fingerprints: ["d7:cd:01:bb:70:02:fd:e3:f6:ef:e7:de:8e:f3:d1:b0"]
+      - run: 
+          name: Install yq
+          command: |
+            make install-yq
       - run:
-          name: Deploy network infrastructure
+          name: Install ansible
+          command: |
+            amazon-linux-extras install epel -y
+            yum install -y ansible
+            ansible-galaxy collection install community.general
+      - run:
+          name: Deploy project
           command: |
             ./deploy.sh
 

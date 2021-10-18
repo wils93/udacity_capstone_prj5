@@ -36,9 +36,8 @@ install-ansible:
 	which ansible
 
 install-yq:
-	sudo wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
-	sudo chmod +x /usr/bin/yq
-	which yq
+	wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
+	chmod +x /usr/bin/yq
 
 install-local:
 	npm install
