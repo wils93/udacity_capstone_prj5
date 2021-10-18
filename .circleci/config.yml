@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Install packages
           command: |
-            make install
+            make install-local
       - save_cache:
           paths:
             - "./package-lock.json"
@@ -38,12 +38,85 @@ jobs:
       - run:
           name: Build
           command: |
-            make build
+            make build-local
+            
+  lint:
+    docker:
+      - image: node:16
+
+    working_directory: ~/project
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-packages-{{ checksum "package.json" }}
+            - v1-packages-
+      - run:
+          name: Lint
+          command: |
+            make lint
+            
+  build-image:
+    docker:
+      - image: docker:20.10.9-git
+    
+    working_directory: ~/project
+    
+    steps:
+      - setup_remote_docker:
+          version: 20.10.9
+      - checkout
+      - run:
+          name: Build and push Docker image
+          command: |
+            docker build -t dgbwm .
+            docker tag dgbwm wils93/udacity_capstone_prj5:latest
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push wils93/udacity_capstone_prj5:latest
+            
+  deploy:
+    docker:
+      - image: amazon/aws-cli
+      
+    working_directory: ~/project
+    
+    steps:
+      - run:
+          name: Install tar
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: Install git
+          command: |
+            yum install -y git
+      - run:
+          name: Install ansible
+          command: |
+            apk add --update ansible
+            ansible --version
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d7:cd:01:bb:70:02:fd:e3:f6:ef:e7:de:8e:f3:d1:b0"]
+      - run:
+          name: Deploy network infrastructure
+          command: |
+            ./deploy.sh
 
 workflows:
   default:
     jobs:
       - install-deps
+      - lint
       - build:
           requires:
             - install-deps
+            - lint
+      
+      - build-image:
+          requires:
+            - build
+      
+      - deploy:
+          requires:
+            - build-image
