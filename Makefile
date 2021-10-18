@@ -1,6 +1,6 @@
 install-hadolint:
-	sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.7.0/hadolint-Linux-x86_64
-	sudo chmod +x /bin/hadolint
+	wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.7.0/hadolint-Linux-x86_64
+	chmod +x /bin/hadolint
 	which hadolint
 
 install-circleci:
@@ -43,13 +43,13 @@ install-yq:
 install-local:
 	npm install
 
-build-local:
+build-local: install-local
 	npm run build
 	
 run-local:
 	npm start
 
-lint:
+lint: install-local install-hadolint
 	npm run svelte-check
 	hadolint Dockerfile
 
