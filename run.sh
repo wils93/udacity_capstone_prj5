@@ -26,9 +26,9 @@ update ()
         --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
         --region=us-east-2
     
-    aws cloudformation wait \
-        stack-update-complete \
-        --stack-name $stack_name
+    # aws cloudformation wait \
+    #     stack-update-complete \
+    #     --stack-name $stack_name
 }
 
 delete ()
