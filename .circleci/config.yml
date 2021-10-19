@@ -81,6 +81,9 @@ jobs:
       
     working_directory: ~/project
     
+    environment:
+      TERM: xterm
+    
     steps:
       - run:
           name: Install tar
