@@ -99,6 +99,9 @@ So you **D**on't **G**et **B**ored **W**ith **M**e (*DGBWM*)
 #### Cluster
 ![workflow](./architecture/cluster.svg)
 
+#### CI/CD Pipeline
+![workflow](./architecture/ci.png)
+
 ## Project Setup
 In order to start working with the project you shall install the needed tools
 Most of the steps are automated using the [`Makefile`](./Makefile)
