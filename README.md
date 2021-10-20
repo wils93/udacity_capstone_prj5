@@ -201,3 +201,5 @@ http://<minikube ip>:80
 ```
 make delete-cluster
 ```
+## Project Website
+In order to play around the website, please visit [DGBWM](d2cl98kgmfei96.cloudfront.net)
