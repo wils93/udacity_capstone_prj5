@@ -28,6 +28,7 @@ This includes:
 * Using [NGINX](https://www.nginx.com/) for serving the website
 * Using [Ansible](https://www.ansible.com/) for automatic configuration of infrastructure
 * Using [Minikube](https://minikube.sigs.k8s.io/docs/) for building local Kubernetes clusters
+* Using [CloudFront](https://aws.amazon.com/cloudfront/) to access the website content
 
 ## Project Overview
 
